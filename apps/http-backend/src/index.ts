@@ -36,7 +36,7 @@ app.post("/signup", async (req, res) => {
       userId: user.id,
     });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: error });
   }
 });
 
@@ -94,6 +94,28 @@ app.post("/room", middleware, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error });
+  }
+});
+
+app.get("/chats/:roomId", async (req, res) => {
+  const roomId = Number(req.params.roomId);
+
+  try {
+    const messages = await prismaClient.chat.findMany({
+      where: {
+        roomId
+      },
+      orderBy: {
+        id: "desc"
+      },
+      take: 50
+    });
+
+    res.json({
+      messages
+    });
+  } catch(e) {
+    res.status(500).json({ message: e });
   }
 });
 
